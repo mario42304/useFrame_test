@@ -10,24 +10,6 @@ function MyMesh({ isPaused }: MyMeshProps) {
   const mixerRef = useRef<THREE.AnimationMixer>(null);
   const actionRef = useRef<THREE.AnimationAction>(null);
 
-  useEffect(() => {
-    if (!meshRef.current) return;
-
-    const mixer = new THREE.AnimationMixer(meshRef.current);
-    mixerRef.current = mixer;
-
-    const time = [0, 1, 2];
-    const value = [0, 0, 0, 1, 0, 0, 0, 0, 0];
-
-    const track = new THREE.VectorKeyframeTrack(".position", time, value);
-    const clip = new THREE.AnimationClip("move", -1, [track]);
-    const action = mixer.clipAction(clip);
-    action.setLoop(THREE.LoopRepeat, Infinity);
-    action.play();
-
-    actionRef.current = action;
-  }, []);
-
   if (actionRef.current) {
     actionRef.current.paused = isPaused;
   }
@@ -48,11 +30,9 @@ function MyMesh({ isPaused }: MyMeshProps) {
   );
 }
 
-function HTMLButton({ children, onClick }: HTMLButtonProps) {
+function HTMLButton({ children, setIsPaused }: HTMLButtonProps) {
   const handlePause = () => {
-    if (!actionRef.current) return;
-    setIsRunning(!isRunning);
-    actionRef.current.paused = !isRunning;
+    setIsPaused((prev) => !prev);
   };
   return (
     <>
@@ -64,7 +44,7 @@ function HTMLButton({ children, onClick }: HTMLButtonProps) {
 }
 
 export default function App() {
-  const [isRunning, setIsRunning] = useState<boolean>(false);
+  const [isPaused, setIsPaused] = useState<boolean>(false);
 
   return (
     <>
@@ -76,9 +56,11 @@ export default function App() {
           lookAt={[0, 0, 0]}
           intensity={1}
         />
-        <MyMesh isRunning={isRunning} setIsRunning={setIsRunning} />
+        <MyMesh isPaused={isPaused} />
       </Canvas>
-      <HTMLButton>{isRunning ? "stop" : "start"}</HTMLButton>
+      <HTMLButton setIsPaused={setIsPaused}>
+        {isPaused ? "stop" : "start"}
+      </HTMLButton>
     </>
   );
 }

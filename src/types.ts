@@ -4,5 +4,5 @@ export interface MyMeshProps {
 
 export interface HTMLButtonProps {
   children: React.ReactNode;
-  onClick: () => void;
+  setIsPaused: React.Dispatch<React.SetStateAction<boolean>>;
 }
